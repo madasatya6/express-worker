@@ -1,0 +1,22 @@
+{
+  "name": "exexpress-worker",
+  "version": "1.0.0",
+  "description": "Worker for express js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madasatya6/express-worker.git"
+  },
+  "author": "Mada Satya Bayu Ambika",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/madasatya6/express-worker/issues"
+  },
+  "homepage": "https://github.com/madasatya6/express-worker#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
