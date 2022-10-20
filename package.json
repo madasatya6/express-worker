@@ -1,10 +1,13 @@
 {
   "name": "exexpress-worker",
   "version": "1.0.0",
-  "description": "Worker for express js",
+  "description": "Rabbitmq worker for express js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js --exec babel-node",
+    "build": "babel src -d dist",
+    "serve": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +20,19 @@
   },
   "homepage": "https://github.com/madasatya6/express-worker#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "@babel/cli": "^7.13.14",
+    "@babel/preset-react": "^7.13.13"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3",
+    "@babel/node": "^7.13.13",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-transform-runtime": "^7.13.15",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.13.15",
+    "@babel/register": "^7.13.14",
+    "@babel/runtime": "^7.13.10",
+    "nodemon": "^2.0.20"
   }
 }
