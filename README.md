@@ -1,2 +1,2 @@
 # express-worker
-Express Worker for Nodejs v14.17.6
+Rabbitmq worker for Nodejs v14.17.6
