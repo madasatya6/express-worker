@@ -20,9 +20,11 @@
   },
   "homepage": "https://github.com/madasatya6/express-worker#readme",
   "dependencies": {
-    "express": "^4.18.2",
     "@babel/cli": "^7.13.14",
-    "@babel/preset-react": "^7.13.13"
+    "@babel/preset-react": "^7.13.13",
+    "amqplib": "^0.10.3",
+    "bluebird": "^3.7.2",
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
@@ -33,6 +35,11 @@
     "@babel/preset-env": "^7.13.15",
     "@babel/register": "^7.13.14",
     "@babel/runtime": "^7.13.10",
+    "eslint": "^8.25.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^2.0.20"
   }
 }
