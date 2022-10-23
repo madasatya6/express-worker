@@ -8,7 +8,8 @@
     "publisher": "nodemon src/publisher/index.js --exec babel-node",
     "worker": "nodemon src/worker/index.js --exec babel-node",
     "build": "babel src -d dist",
-    "serve": "node dist/index.js"
+    "serve_publisher": "node dist/publisher/index.js",
+    "serve_worker": "node dist/worker/index.js"
   },
   "repository": {
     "type": "git",
