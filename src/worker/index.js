@@ -1,37 +1,39 @@
-import amqp, { connect } from 'amqplib'
-import { resolve } from 'bluebird'
+import amqp from 'amqplib/callback_api'
 import config from '../config'
 
-const assertQueueOptions = { durable: true }
-const consumeQueueOptions = { noAck: false }
-const { uri, workQueue } = config 
+const { uri, workQueue } = config
 
-const genRandomTime = () => Math.random() * 10000
+const listenToQueue = () => amqp.connect(uri, function(error0, connection) {
+    if (error0) {
+        throw error0;
+    }
+    connection.createChannel(function(error1, channel) {
 
-const processHeavyTask = msg => resolve(console.log("Message received")).
-    then(() => {
-        switch (workQueue) {
-            case "workQueue": 
-                console.log(msg.content.toString())
-                break
+        if (error1) {
+            throw error1;
         }
-    })
 
-const assertAndConsumeQueue = (channel) => {
-    console.log('Worker is running! Waiting for new message...')
+        channel.assertQueue(workQueue, {
+            durable: true
+        });
 
-    const ackMsg = (msg) => resolve(msg)
-        .then(msg => processHeavyTask(msg))
-        .then((msg) => channel.ack(msg))
+        channel.prefetch(1);
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", workQueue);
+        channel.consume(workQueue, function(msg) {
 
-    return channel.assertQueue(workQueue, assertQueueOptions)
-        .then(() => channel.prefetch(1))
-        .then(() => channel.consume(workQueue, ackMsg, consumeQueueOptions))
-}
+            var secs = msg.content.toString().split('.').length - 1;
 
-const listenToQueue = () => amqp.connect(uri)
-    .then(connection => connection.createChannel())
-    .then(channel => assertAndConsumeQueue(channel))
+            console.log(" [x] Received %s", msg.content.toString());
+            setTimeout(function() {
+                console.log(" [x] Done");
+                channel.ack(msg);
+            }, secs * 1000);
 
+        }, {
+            // manual acknowledgment mode,
+            noAck: false
+        });
+    });
+});
 
 export default listenToQueue()
