@@ -4,14 +4,16 @@ import config from '../config'
 
 const assertQueueOptions = { durable: true }
 const sendToQueueOptions = { persistent: true }
-const data = process.argv[2] ? process.argv[2] : 'any data goes here'
+const data = "Latihan Worker"
 const { uri, workQueue } = config
 
+// repository rabbit mq with worker queue https://github.com/Otavioensa/rabbit-workers
+// medium tutorial https://medium.com/@otavioguastamacchia/implementing-worker-applications-with-rabbitmq-node-1a8b7ab98e47
 const lightTask = () => resolve(console.log('Light task abstaction'))
 
 const assertAndSendToQueue = (channel) => {
     const bufferData = Buffer.from(data)
-
+    
     return channel.assertQueue(workQueue, assertQueueOptions)
         .then(() => channel.sendToQueue(workQueue, bufferData, sendToQueueOptions))
         .then(() => channel.close())

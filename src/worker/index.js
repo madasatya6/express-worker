@@ -3,7 +3,7 @@ import { resolve } from 'bluebird'
 import config from '../config'
 
 const assertQueueOptions = { durable: true }
-const consumeQueueOptions = { noAck: false }
+const consumeQueueOptions = { noAck: true }
 const { uri, workQueue } = config 
 
 const genRandomTime = () => Math.random() * 10000
