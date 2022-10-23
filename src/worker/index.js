@@ -7,33 +7,67 @@ const listenToQueue = () => amqp.connect(uri, function(error0, connection) {
     if (error0) {
         throw error0;
     }
+
     connection.createChannel(function(error1, channel) {
 
         if (error1) {
             throw error1;
         }
 
-        channel.assertQueue(workQueue, {
-            durable: true
-        });
+        let workers = registerWorkers(new Worker(channel));
 
-        channel.prefetch(1);
-        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", workQueue);
-        channel.consume(workQueue, function(msg) {
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C");
 
-            var secs = msg.content.toString().split('.').length - 1;
+        for (let worker of workers.GetRoutes()) { 
+            
+            channel.assertQueue(worker.name, {
+                durable: true
+            });
 
-            console.log(" [x] Received %s", msg.content.toString());
-            setTimeout(function() {
-                console.log(" [x] Done");
-                channel.ack(msg);
-            }, secs * 1000);
-
-        }, {
-            // manual acknowledgment mode,
-            noAck: false
-        });
+            channel.prefetch(1);
+            
+            channel.consume(worker.name, worker.callback, {
+                // manual acknowledgment mode,
+                noAck: false
+            });
+        }
     });
 });
+
+const registerWorkers = (worker) => {
+    
+    worker.Register("create-tickets", function(msg) {
+        let channel = worker.GetChannel();
+        var secs = msg.content.toString().split('.').length - 1;
+
+        console.log(" [x] Received %s", msg.content.toString());
+        setTimeout(function() {
+            console.log(" [x] Done");
+            channel.ack(msg);
+        }, secs * 1000);
+
+    })
+   
+    return worker;
+}
+
+class Worker {
+    constructor(channel) {
+        this.channel = channel;
+        this.workers = [];
+    }
+    Register(workerName, callback) {
+        this.workers.push({
+            name: workerName,
+            callback: callback,
+        })
+    }
+    GetRoutes() {
+        return this.workers;
+    }
+    GetChannel() {
+        return this.channel;
+    }
+}
 
 export default listenToQueue()
