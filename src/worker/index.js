@@ -9,7 +9,13 @@ const { uri, workQueue } = config
 const genRandomTime = () => Math.random() * 10000
 
 const processHeavyTask = msg => resolve(console.log("Message received")).
-    then(setTimeout(() => console.log(msg.content.toString()), genRandomTime()))
+    then(() => {
+        switch (workQueue) {
+            case "workQueue": 
+                console.log(msg.content.toString())
+                break
+        }
+    })
 
 const assertAndConsumeQueue = (channel) => {
     console.log('Worker is running! Waiting for new message...')

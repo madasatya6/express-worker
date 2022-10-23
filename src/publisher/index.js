@@ -9,6 +9,7 @@ const { uri, workQueue } = config
 
 // repository rabbit mq with worker queue https://github.com/Otavioensa/rabbit-workers
 // medium tutorial https://medium.com/@otavioguastamacchia/implementing-worker-applications-with-rabbitmq-node-1a8b7ab98e47
+// sumber https://www.rabbitmq.com/getstarted.html
 const lightTask = () => resolve(console.log('Light task abstaction'))
 
 const assertAndSendToQueue = (channel) => {
