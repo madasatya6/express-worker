@@ -36,7 +36,7 @@ const listenToQueue = () => amqp.connect(uri, function(error0, connection) {
 
 const registerWorkers = (worker) => {
     
-    worker.Register("create-tickets", CreateTickets(worker))
+    worker.Register("js.create-ticket", CreateTickets(worker))
    
     return worker;
 }
