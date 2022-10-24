@@ -36,7 +36,13 @@ const listenToQueue = () => amqp.connect(uri, function(error0, connection) {
 
 const registerWorkers = (worker) => {
     
-    worker.Register("create-tickets", function(msg) {
+    worker.Register("create-tickets", CreateTickets(worker))
+   
+    return worker;
+}
+
+const CreateTickets = (worker) => {
+    return function(msg) {
         let channel = worker.GetChannel();
         var secs = msg.content.toString().split('.').length - 1;
 
@@ -46,9 +52,7 @@ const registerWorkers = (worker) => {
             channel.ack(msg);
         }, secs * 1000);
 
-    })
-   
-    return worker;
+    };
 }
 
 class Worker {
