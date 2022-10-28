@@ -1,11 +1,11 @@
-import amqp, { connect } from 'amqplib'
+import amqp from 'amqplib'
 import { resolve } from 'bluebird'
 import config from '../config'
 
-const assertQueueOptions = { durable: true }
+const assertQueueOptions = { durable: false }
 const sendToQueueOptions = { persistent: true }
-const data = "Latihan Worker"
-const { uri, workQueue } = config
+const payload = `{"message": "this is message", "customer_id": 1, "order_id": 1234}`
+const { uri, workQueue, key } = config
 
 // repository rabbit mq with worker queue https://github.com/Otavioensa/rabbit-workers
 // medium tutorial https://medium.com/@otavioguastamacchia/implementing-worker-applications-with-rabbitmq-node-1a8b7ab98e47
@@ -13,10 +13,10 @@ const { uri, workQueue } = config
 const lightTask = () => resolve(console.log('Light task abstaction'))
 
 const assertAndSendToQueue = (channel) => {
-    const bufferData = Buffer.from(data)
+    const bufferData = Buffer.from(payload)
     
-    return channel.assertQueue(workQueue, assertQueueOptions)
-        .then(() => channel.sendToQueue(workQueue, bufferData, sendToQueueOptions))
+    return channel.assertExchange(workQueue, 'topic', assertQueueOptions)
+        .then(() => channel.publish(workQueue, key, bufferData))
         .then(() => channel.close())
 }
 

@@ -1,7 +1,7 @@
 import amqp from 'amqplib/callback_api'
 import config from '../config'
 
-const { uri, workQueue } = config
+const { uri, workQueue, key } = config
 
 const listenToQueue = () => amqp.connect(uri, function(error0, connection) {
     if (error0) {
@@ -14,44 +14,45 @@ const listenToQueue = () => amqp.connect(uri, function(error0, connection) {
             throw error1;
         }
 
-        let workers = registerWorkers(new Worker(channel));
+        let workers = workerRegistry(new Worker(channel));
+        
+        channel.assertExchange(workQueue, 'topic', {
+            durable: false
+        });
 
-        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C");
+        channel.prefetch(1);
 
-        for (let worker of workers.GetRoutes()) { 
-            
-            channel.assertQueue(worker.name, {
-                durable: true
-            });
+        channel.assertQueue('', {
+            exclusive: true
+        }, function(error2, q) {
 
-            channel.prefetch(1);
-            
-            channel.consume(worker.name, worker.callback, {
-                // manual acknowledgment mode,
-                noAck: false
-            });
-        }
+            if (error2) {
+                throw error2;
+            }
+            console.log(' [*] Waiting for logs. To exit press CTRL+C');
+
+            for (let worker of workers.GetRoutes()) { 
+                channel.bindQueue(q.queue, workQueue, worker.name);
+        
+                channel.consume(q.queue, worker.callback, {
+                    noAck: true
+                });
+            }
+        });
     });
 });
 
-const registerWorkers = (worker) => {
+const workerRegistry = (worker) => {
     
-    worker.Register("js.create-ticket", CreateTickets(worker))
+    worker.Register("create.one", CreateTickets(worker))
    
     return worker;
 }
 
 const CreateTickets = (worker) => {
     return function(msg) {
-        let channel = worker.GetChannel();
-        var secs = msg.content.toString().split('.').length - 1;
-
-        console.log(" [x] Received %s", msg.content.toString());
-        setTimeout(function() {
-            console.log(" [x] Done");
-            channel.ack(msg);
-        }, secs * 1000);
-
+        // let channel = worker.GetChannel();
+        console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
     };
 }
 
